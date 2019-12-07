@@ -1,5 +1,5 @@
-import express, { Router } from 'express';
-import Project, { IProject } from '../../models/project.model'
+import { Router } from 'express';
+import Project from '../../models/project.model'
 
 const router = Router();
 
@@ -39,7 +39,7 @@ router.route('/:id')
       res.json(res.locals.project)
     })
     .patch((req, res) => {
-      const project = <IProject>res.locals.project
+      const project = res.locals.project
 
       if (req.body['_id']) {
         delete req.body['_id']
@@ -48,5 +48,8 @@ router.route('/:id')
       Object.entries(req.body).forEach(item => {
         project[item[0]] = item[1]
       })
+
+      project.save()
+      res.sendStatus(204)
     })
 export default router
