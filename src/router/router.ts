@@ -4,7 +4,7 @@ import projectRouter from './routes/project.router';
 const router = Router();
 
 function errorHandler (err: any, req: Request, res: Response, next: NextFunction) {
-    if (err.name === 'ValidationError') {
+    if (err.name === 'ValidationError' || 'CastError') {
         return res.status(400).send({error: err})
     }
     res.status(500).send({ error: err })

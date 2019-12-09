@@ -6,7 +6,7 @@ dotenv.config()
 
 const port = process.env.PORT || 8080; // default port to listen
 
-mongoose.connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false })
 const client = mongoose.connection
 
 client.on('error', console.error.bind(console, 'connection error:'));
