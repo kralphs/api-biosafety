@@ -4,7 +4,10 @@ import projectRouter from './routes/project.router';
 const router = Router();
 
 function errorHandler (err: any, req: Request, res: Response, next: NextFunction) {
-    res.status(500).render('error', { error: err })
+    if (err.name === 'ValidationError') {
+        return res.status(400).send({error: err})
+    }
+    res.status(500).send({ error: err })
 }
 
 router

@@ -1,238 +1,90 @@
-import mongoose, { Schema, Document } from 'mongoose'
-let ObjectId = mongoose.Schema.Types.ObjectId;
+import { createSchema, Type, typedModel } from 'ts-mongoose';
 
-export interface IProject extends Document {
-    idPrefix: string,
-    idNumber: number,
-    title: string,
-    status: string,
-    projectType: string,
-    departmentChair: mongoose.Types.ObjectId,
-    dateReceived: Date,
-    dateCreated: Date,
-    createdBy: mongoose.Types.ObjectId,
-    pi: mongoose.Types.ObjectId,
-    copis: [
-        mongoose.Types.ObjectId
-    ],
-    roles:[
-        {
-            roleName: string,
-            person: mongoose.Types.ObjectId
-        }
-    ],
-    agentToxinInvolved: string[],
-    fundingSouces: mongoose.Types.ObjectId[],
-    experimentalEffects:[
-        {
-            type:string,
-            explanation: string
-        }
-    ],
-    keyPersonnel: [
-         {
-             person: mongoose.Types.ObjectId,
-             duties: string,
-             experience: string
-         } 
-    ],
-    nonTechnicalSynopsis: string,
-    transgenicAnimals:[
-        {
-            name: string,
-            geneticallyAlteredDesc: string,
-            procurementDesc: string,
-            markingDesc: string
-        }
-    ],
-    rdna:[
-        {
-            dnaSource:string,
-            dnaNature:string,
-            recipeintOrganism:string,
-            vectorList:string,
-            vectorMap:string
-        }
-    ],
-    nihGuidelines:[
-        String
-    ],
-    foreignGeneExpression: string,
-    fieldRelease:[
-        {
-            usdaPermitID: string,
-            file: string
-        }
-    ],
-    infectiousAgent: [
-        {
-            name: string,
-            humanHazard: string,
-            animalHazard: string,
-            plantHazard: string
-        }
-    ],
-    cdcAgent: [
-        {
-            permitNumber: string,
-            permitDocument: string
-        }
-    ],
-    humanAffect: [
-        {
-            description: string,
-            vaccineAvailable: boolean,
-            selectAgentToxins: boolean
-        }
-    ],
-    aphisPermit: [
-        {
-            permitID: string,
-            permitDocument: string
-        }
-    ],
-    proposedBiocontainmentLevel: string,
-    decontaminationMethods: [
-        {
-            type: string,
-            method: string
-        }
-    ],
-    ppe: [String],
-    ppeSpecialPrecautions: string,
-    safetyEquipmentLocation: [
-        {
-            equipment: string,
-            location: string,
-            certificationDate: Date
-        }
-    ],
-    animalInvolved: [
-        {
-            number: {type:Number},
-            type: string,
-            disposalMethod: string,
-            howIsAgentShed: string,
-            facilityPrecautions: string
-        }
-    ]
-}
-
-let ProjectSchema = new Schema({
-    idPrefix: {type:String, require:true}, //a prefix to the id to communicate project type to the user - this use case is common and needs to be maintained
-    idNumber: {type:Number}, //unique identifier - auto-incremented across all entities
-    title: {type:String},
-    status: {type:String},
-    projectType: {type:String},
-    departmentChair: ObjectId,
-    dateReceived: {type:Date}, //date the project was submitted into the Biosafety office for review
-    dateCreated: {type:Date}, //date the project was generted
-    createdBy: ObjectId,
-    pi: ObjectId,
-    copis: [
-        ObjectId
-    ],
-    roles:[
-        {
-            roleName:{type:String},
-            person: ObjectId
-        }
-    ],
-    agentToxinInvolved: [String],
-    fundingSouces:[ObjectId],
-    experimentalEffects:[
-        {
-            type:{type:String},
-            explanation:{type:String}
-        }
-    ],
-    keyPersonnel: [
-         {
-             person: ObjectId,
-             duties:{type:String},
-             experience:{type:String}
-         } 
-    ],
-    nonTechnicalSynopsis: {type:String},
-    transgenicAnimals:[
-        {
-            name:{type:String},
-            geneticallyAlteredDesc:{type:String},
-            procurementDesc:{type:String},
-            markingDesc:{type:String}
-        }
-    ],
-    rdna:[
-        {
-            dnaSource:{type:String},
-            dnaNature:{type:String},
-            recipeintOrganism:{type:String},
-            vectorList:{type:String},
-            vectorMap:{type:String}
-        }
-    ],
-    nihGuidelines:[
-        String
-    ],
-    foreignGeneExpression: {type:String},
-    fieldRelease:[
-        {
-            usdaPermitID: {type:String},
-            file: {type:String}
-        }
-    ],
-    infectiousAgent: [
-        {
-            name: {type:String},
-            humanHazard: {type:String},
-            animalHazard: {type:String},
-            plantHazard: {type:String}
-        }
-    ],
-    cdcAgent: [
-        {
-            permitNumber: {type:String},
-            permitDocument: {type:String}
-        }
-    ],
-    humanAffect: [
-        {
-            description: {type:String},
-            vaccineAvailable: {type:Boolean},
-            selectAgentToxins: {type: Boolean}
-        }
-    ],
-    aphisPermit: [
-        {
-            permitID: {type:String},
-            permitDocument: {type:String}
-        }
-    ],
-    proposedBiocontainmentLevel: {type:String},
-    decontaminationMethods: [
-        {
-            type: {type:String},
-            method: {type:String}
-        }
-    ],
-    ppe: [String],
-    ppeSpecialPrecautions: {type:String},
-    safetyEquipmentLocation: [
-        {
-            equipment: {type:String},
-            location: {type:String},
-            certificationDate: {type:Date}
-        }
-    ],
-    animalInvolved: [
-        {
-            number: {type:Number},
-            type: {type:String},
-            disposalMethod: {type:String},
-            howIsAgentShed: {type:String},
-            facilityPrecautions: {type:String}
-        }
-    ]
+const ProjectSchema = createSchema({
+    idPrefix: Type.string({required: true}), //a prefix to the id to communicate project type to the user - this use case is common and needs to be maintained
+    idNumber: Type.number(), //unique identifier - auto-incremented across all entities
+    title: Type.string(),
+    status: Type.string(),
+    projectType: Type.string(),
+    departmentChair: Type.objectId(),
+    dateReceived: Type.date(), //date the project was submitted into the Biosafety office for review
+    dateCreated: Type.date(), //date the project was generted
+    createdBy: Type.objectId(),
+    pi: Type.objectId(),
+    copis: Type.array().of(Type.objectId()),
+    roles: Type.array().of({
+        roleName:Type.string(),
+        person: Type.objectId()
+    }),
+    agentToxinInvolved: Type.array().of(Type.string()),
+    fundingSouces:Type.array().of(Type.objectId()),
+    experimentalEffects: Type.array().of({
+        type:Type.string(),
+        explanation:Type.string()
+    }),
+    keyPersonnel: Type.array().of({
+        person: Type.objectId(),
+        duties:Type.string(),
+        experience:Type.string()
+    }),
+    nonTechnicalSynopsis: Type.string(),
+    transgenicAnimals: Type.array().of({
+        name:Type.string(),
+        geneticallyAlteredDesc:Type.string(),
+        procurementDesc:Type.string(),
+        markingDesc:Type.string()
+    }),
+    rdna: Type.array().of({
+        dnaSource:Type.string(),
+        dnaNature:Type.string(),
+        recipeintOrganism:Type.string(),
+        vectorList:Type.string(),
+        vectorMap:Type.string()
+    }),
+    nihGuidelines: Type.array().of(Type.string()),
+    foreignGeneExpression: Type.string(),
+    fieldRelease: Type.array().of({
+        usdaPermitID: Type.string(),
+        file: Type.string()
+    }),
+    infectiousAgent: Type.array().of({
+        name: Type.string(),
+        humanHazard: Type.string(),
+        animalHazard: Type.string(),
+        plantHazard: Type.string()
+    }),
+    cdcAgent: Type.array().of({
+        permitNumber: Type.string(),
+        permitDocument: Type.string()
+    }),
+    humanAffect: Type.array().of({
+        description: Type.string(),
+        vaccineAvailable: Type.boolean(),
+        selectAgentToxins: Type.boolean()
+    }),
+    aphisPermit: Type.array().of({
+        permitID: Type.string(),
+        permitDocument: Type.string()
+    }),
+    proposedBiocontainmentLevel: Type.string(),
+    decontaminationMethods: Type.array().of({
+        type: Type.string(),
+        method: Type.string()
+    }),
+    ppe: Type.array().of(Type.string()),
+    ppeSpecialPrecautions: Type.string(),
+    safetyEquipmentLocation: Type.array().of({
+        equipment: Type.string(),
+        location: Type.string(),
+        certificationDate: Type.date()
+    }),
+    animalInvolved: Type.array().of({
+        number: Type.number(),
+        type: Type.string(),
+        disposalMethod: Type.string(),
+        howIsAgentShed: Type.string(),
+        facilityPrecautions: Type.string()
+    })
 })
 
-export default mongoose.model<IProject>('Projects', ProjectSchema)
+export default typedModel('Projects', ProjectSchema)

@@ -10,16 +10,20 @@ router
     const { query } = req;
     Project.find(query, (err, projects) => {
       if (err) {
-        next(err)
+        return next(err)
       }
       res.send({data: projects});
     });
   })
-  .post( async (req, res) => {
+  .post( async (req, res, next) => {
     const project = new Project(req.body)
 
-    await project.save()
-    res.status(201).send({data: project})
+    await project.save((err, project) => {
+      if (err) {
+        return next(err)
+      }
+      res.status(201).send({data: project})
+    })
   })
 
 router.route('/:id')
@@ -39,7 +43,7 @@ router.route('/:id')
 
     Project.findOneAndReplace({_id: req.params.id}, project, (err, project) => {
       if (err) {
-        next(err)
+        return next(err)
       }
       res.send({data: project})
     })
@@ -51,7 +55,7 @@ router.route('/:id')
 
     Project.findByIdAndUpdate(req.params.id, req.body, {runValidators: true}, (err, project) => {
       if (err) {
-        next(err)
+        return next(err)
       }
       res.sendStatus(204)
     })
@@ -59,7 +63,7 @@ router.route('/:id')
   .delete((req, res, next) => {
     Project.findByIdAndRemove(req.params.id, (err, project) => {
       if (err) {
-        next(err)
+        return next(err)
       }
       res.sendStatus(204)
     })
