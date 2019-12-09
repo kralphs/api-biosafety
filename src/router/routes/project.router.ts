@@ -4,27 +4,27 @@ import Project from '../../models/project.model'
 const router = Router();
 
 router
-    .route('/')
-    .get((req, res) => {
-        const { query } = req;
-        Project.find(query, (err, projects) => {
-          if (err) {
-            return res.send(err);
-          }
-          return res.json(projects);
-        });
-      })
-      .post((req, res) => {
-          const project = new Project(req.body)
+  .route('/')
+  .get((req, res) => {
+    const { query } = req;
+    Project.find(query, (err, projects) => {
+      if (err) {
+        return res.send(err);
+      }
+      return res.json(projects);
+    });
+  })
+  .post( async (req, res) => {
+    const project = new Project(req.body)
 
-          project.save()
-          res.status(201).json(project)
-      })
+    await project.save()
+    res.status(201).json(project)
+  })
 
 router.use('/:id', (req, res, next) => {
   Project.findById(req.params.id, (err, project) => {
     if (err) {
-        return res.send(err);
+      return res.send(err);
     }
     if (project) {
       res.locals.project = project
@@ -35,21 +35,32 @@ router.use('/:id', (req, res, next) => {
 })
 
 router.route('/:id')
-    .get((req, res) => {
-      res.json(res.locals.project)
+  .get((req, res) => {
+    res.json(res.locals.project)
+  })
+  .put((req, res)=> {
+
+  })
+  .patch( async (req, res) => {
+    const project = res.locals.project
+
+    if (req.body['_id']) {
+      delete req.body['_id']
+    }
+
+    Object.entries(req.body).forEach(item => {
+      project[item[0]] = item[1]
     })
-    .patch((req, res) => {
-      const project = res.locals.project
 
-      if (req.body['_id']) {
-        delete req.body['_id']
+    await project.save()
+    res.sendStatus(204)
+  })
+  .delete((req, res) => {
+    res.locals.project.remove((err: Error)=> {
+      if (err) {
+        res.send(err)
       }
-
-      Object.entries(req.body).forEach(item => {
-        project[item[0]] = item[1]
-      })
-
-      project.save()
       res.sendStatus(204)
     })
+  })
 export default router
