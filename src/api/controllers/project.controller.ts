@@ -4,19 +4,19 @@ import { Request, Response, NextFunction } from 'express';
 export default class ProjectController {
   static getProjects(req: Request, res: Response, next: NextFunction) {
     const { query } = req;
-    const { fields = null } = query;
-    const { limit = 200 } = query;
-    const { skip = 0 } = query;
+    const { $fields = null } = query;
+    const { $limit = 200 } = query;
+    const { $skip = 0 } = query;
     let projection;
 
-    if (fields) {
-      projection = fields.replace(/,/g, ' ');
+    if ($fields) {
+      projection = $fields.replace(/,/g, ' ');
     }
 
     Project.find(
       query,
       projection,
-      { limit: +limit, skip: +skip },
+      { limit: +$limit, skip: +$skip },
       (err, projects) => {
         if (err) {
           return next(err);
