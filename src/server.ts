@@ -1,5 +1,5 @@
 import express from 'express'
-import router from './router/router';
+import api from './api/router';
 import morgan from 'morgan'
 
 const app = express()
@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Define routes
-app.use('/api/v1', router)
+app.use('/api/v1', api)
 app.use('/', (req, res) => res.send('Hello world!!!'));
 app.use('*', (req, res) => res.status(404).json({ error: 'not found'}))
 
