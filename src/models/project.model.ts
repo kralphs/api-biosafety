@@ -85,6 +85,6 @@ const ProjectSchema = createSchema({
         howIsAgentShed: Type.string(),
         facilityPrecautions: Type.string()
     })
-})
+}, { strictQuery: true })
 
 export default typedModel('Projects', ProjectSchema)

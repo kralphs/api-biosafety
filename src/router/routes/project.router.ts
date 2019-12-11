@@ -11,9 +11,6 @@ router
     const { fields = null } = query;
     const { limit = 200 } = query;
     const { skip = 0 } = query;
-    delete query.fields
-    delete query.limit
-    delete query.skip
     let projection;
 
     if (fields) {
@@ -54,15 +51,15 @@ router.route('/:id')
   .put((req, res, next)=> {
     const project = new Project(req.body)
     if (req.params.id != project['_id']) {
-      return res.sendStatus(400)
+      return res.sendStatus(400).send("IDs do not match")
     }  
 
-    Project.findOneAndReplace({_id: req.params.id}, project, (err, project) => {
+    Project.findByIdAndUpdate(req.params.id, project, { omitUndefined: true }, (err, project) => {
       if (err) {
         return next(err)
       }
-      res.send({data: project})
-    })
+      return res.send({data: project})
+    })  
   })
   .patch( async (req, res, next) => {
     if (req.body['_id']) {
@@ -81,7 +78,10 @@ router.route('/:id')
       if (err) {
         return next(err)
       }
-      res.sendStatus(204)
+      if (project){
+        return res.sendStatus(204)
+      }
+      res.sendStatus(404)
     })
   })
 export default router
