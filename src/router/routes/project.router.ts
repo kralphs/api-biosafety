@@ -1,87 +1,17 @@
 import { Router } from 'express';
-import Project from '../../models/project.model'
-import { runInNewContext } from 'vm';
+import ProjectController from '../../controllers/project.controller';
 
 const router = Router();
 
 router
   .route('/')
-  .get((req, res, next) => {
-    const { query } = req;
-    const { fields = null } = query;
-    const { limit = 200 } = query;
-    const { skip = 0 } = query;
-    let projection;
+  .get(ProjectController.getProjects)
+  .post(ProjectController.addProject);
 
-    if (fields) {
-      projection = fields.replace(/,/g, ' ');
-    }
-
-    Project.find(query, projection, {limit: +limit, skip: +skip}, (err, projects) => {
-      if (err) {
-        return next(err)
-      }
-      res.send({data: projects});
-    });
-
-  })
-  .post( async (req, res, next) => {
-    const project = new Project(req.body)
-
-    await project.save((err, project) => {
-      if (err) {
-        return next(err)
-      }
-      res.status(201).send({data: project})
-    })
-  })
-
-router.route('/:id')
-  .get((req, res, next) => {
-    Project.findById(req.params.id, (err, project) => {
-      if (err) {
-        return next(err)
-      }
-      if (project) {
-        return res.send({data: project})
-      }
-      res.sendStatus(404)
-    })
-  })
-  .put((req, res, next)=> {
-    const project = new Project(req.body)
-    if (req.params.id != project['_id']) {
-      return res.sendStatus(400).send("IDs do not match")
-    }  
-
-    Project.findByIdAndUpdate(req.params.id, project, { omitUndefined: true }, (err, project) => {
-      if (err) {
-        return next(err)
-      }
-      return res.send({data: project})
-    })  
-  })
-  .patch( async (req, res, next) => {
-    if (req.body['_id']) {
-      delete req.body['_id']
-    }
-
-    Project.findByIdAndUpdate(req.params.id, req.body, {runValidators: true}, (err, project) => {
-      if (err) {
-        return next(err)
-      }
-      res.sendStatus(204)
-    })
-  })
-  .delete((req, res, next) => {
-    Project.findByIdAndRemove(req.params.id, (err, project) => {
-      if (err) {
-        return next(err)
-      }
-      if (project){
-        return res.sendStatus(204)
-      }
-      res.sendStatus(404)
-    })
-  })
-export default router
+router
+  .route('/:id')
+  .get(ProjectController.getProjectById)
+  .put(ProjectController.replaceProjectById)
+  .patch(ProjectController.updateProjectById)
+  .delete(ProjectController.removeProjectById);
+export default router;
